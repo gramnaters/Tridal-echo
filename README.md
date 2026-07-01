@@ -1,16 +1,16 @@
-# Echo Jimmy Extension (Tidal Metadata + Jimmy Streaming)
+# Echo tridal Extension (Tidal Metadata + tridal Streaming)
 
-Tidal-rich metadata (no login needed) + Jimmy backend for streaming/downloads.
+Tidal-rich metadata (no login needed) + tridal backend for streaming/downloads.
 
 ## Architecture
 - **Metadata**: Tidal API (x-tidal-token header, no login required) — home feed, tracks, albums, artists, explore
 - **Search**: Jimmy backend (Lateralus Worker) — track/artist/album search
-- **Streaming**: DASH (Tidal CDN via Jimmy manifest) — 30ms TTFB
+- **Streaming**: DASH (Tidal CDN via tridal manifest) — 30ms TTFB
 - **Download**: Progressive (fly.dev direct) — user-selectable quality
 
 ## Settings
-- **Jimmy Worker URL**: Override backend URL (leave empty for default)
-- **Jimmy Worker Token**: Override backend token (leave empty for default)
+- **tridal Worker URL**: Override backend URL (leave empty for default)
+- **tridal Worker Token**: Override backend token (leave empty for default)
 - **Monochrome API URL**: Optional, for search when Jimmy backend is down
 - **DASH Port**: Local DASH server port (default 6969)
 
