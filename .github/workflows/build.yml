@@ -1,0 +1,43 @@
+name: Build and Release
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+    - name: Grant execute permission
+      run: chmod +x gradlew
+    - name: Build
+      run: ./gradlew :app:assembleRelease --no-daemon
+    - name: Generate keystore
+      run: |
+        keytool -genkey -v -keystore debug.keystore -alias androiddebugkey \
+          -dname "CN=Debug,O=Debug,C=US" -storepass android -keypass android \
+          -keyalg RSA -keysize 2048 -validity 10000 \
+          -J-Djava.security.egd=file:/dev/./urandom
+    - name: Sign
+      run: |
+        BUILD_TOOLS=$(ls -d $ANDROID_HOME/build-tools/*/ | sort -V | tail -1)
+        ${BUILD_TOOLS}zipalign -f -v -p 4 app/build/outputs/apk/release/app-release-unsigned.apk jmusic-aligned.apk
+        ${BUILD_TOOLS}apksigner sign --ks debug.keystore --ks-pass pass:android --key-pass pass:android --out jmusic.eapk jmusic-aligned.apk
+    - name: Release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: v${{ github.run_number }}
+        name: Jimmy v${{ github.run_number }}
+        files: jmusic.eapk
+        prerelease: false
